@@ -1,0 +1,364 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha de Matrícula</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+            color: #333;
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        form {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        fieldset {
+            border: 1px solid #c0c0c0;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+        }
+        legend {
+            font-weight: bold;
+            color: #2980b9;
+            padding: 0 5px;
+        }
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        label {
+            width: 160px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        input[type="text"], 
+        input[type="number"], 
+        input[type="email"], 
+        select {
+            padding: 6px 10px;
+            width: 220px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        small {
+            color: #7f8c8d;
+            margin-left: 15px;
+            font-style: italic;
+        }
+        .grid-cursos {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .curso-label {
+            font-weight: normal;
+            width: auto;
+        }
+        .totales-row {
+            display: flex;
+            justify-content: flex-start;
+            gap: 40px;
+            margin-top: 15px;
+            align-items: center;
+        }
+        .totales-row input {
+            width: 100px;
+            text-align: center;
+            background-color: #ecf0f1;
+            font-weight: bold;
+        }
+        .botones {
+            text-align: center;
+            margin-top: 30px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #fff;
+        }
+        .btn-mostrar { background-color: #27ae60; }
+        .btn-pdf { background-color: #2980b9; }
+        .btn-limpiar { background-color: #e74c3c; }
+        button:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+    <h2>FICHA DE MATRÍCULA</h2>
+    
+    <form id="formularioMatricula" onsubmit="return false;">
+        
+        <!-- 1. Datos Personales del Estudiante -->
+        <fieldset>
+            <legend>1. Datos Personales del Estudiante</legend>
+            
+            <div class="form-row">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" placeholder="Ingrese su nombre" required>
+                <small>Obligatorio.</small>
+            </div>
+            <div class="form-row">
+                <label for="apePaterno">Ape. Paterno:</label>
+                <input type="text" id="apePaterno" placeholder="Ingrese Ape. Paterno" required>
+                <small>Obligatorio.</small>
+            </div>
+            <div class="form-row">
+                <label for="apeMaterno">Ape. Materno:</label>
+                <input type="text" id="apeMaterno" placeholder="Ingrese Ape. Materno" required>
+                <small>Obligatorio.</small>
+            </div>
+            <div class="form-row">
+                <label for="edad">Edad:</label>
+                <input type="number" id="edad" placeholder="Ingrese su edad cumplida" onchange="validarEdad(this)" required>
+                <small>Obligatorio. Mayor o igual a 16 años.</small>
+            </div>
+            <div class="form-row">
+                <label for="celular">Teléfono cel:</label>
+                <!-- Agregado maxlength="9" y función unificada -->
+                <input type="text" id="celular" placeholder="Ingrese num. celular" maxlength="9" oninput="validarTelefono9Input(this)" onblur="validarExacto9(this)">
+                <small>Opcional. Debe iniciar con 9 y tener máx. 9 dígitos.</small>
+            </div>
+            <div class="form-row">
+                <label for="fijo">Tel. fijo:</label>
+                <input type="text" id="fijo" placeholder="Ingrese su teléfono fijo" maxlength="6" oninput="soloNumeros(this)" onblur="validarFijo(this)">
+                <small>Opcional. Exactamente 6 dígitos.</small>
+            </div>
+            <div class="form-row">
+                <label for="dni">DNI:</label>
+                <input type="text" id="dni" placeholder="Ingrese su DNI" maxlength="8" oninput="soloNumeros(this)" onblur="validarDNI(this)" required>
+                <small>Obligatorio. Exactamente 8 dígitos numéricos.</small>
+            </div>
+            <div class="form-row">
+                <label for="correo">Correo:</label>
+                <input type="email" id="correo" placeholder="Ingrese su correo" onblur="validarCorreo(this)" required>
+                <small>Obligatorio. Debe contener el símbolo "@".</small>
+            </div>
+        </fieldset>
+
+        <!-- 2. Datos del Apoderado -->
+        <fieldset>
+            <legend>2. Datos del Apoderado</legend>
+            <div class="form-row">
+                <label for="nombreApoderado">Nombre Completo:</label>
+                <input type="text" id="nombreApoderado" placeholder="Nombre del apoderado" required>
+                <small>Obligatorio.</small>
+            </div>
+            <div class="form-row">
+                <label for="telApoderado">Tel. de Emergencia:</label>
+                <!-- Usando la misma lógica unificada para teléfonos móviles -->
+                <input type="text" id="telApoderado" placeholder="Teléfono de contacto" maxlength="9" oninput="validarTelefono9Input(this)" onblur="validarExacto9(this)" required>
+                <small>Obligatorio. Debe iniciar con 9 y tener máx. 9 dígitos.</small>
+            </div>
+        </fieldset>
+
+        <!-- 3. Cursos a Matricular -->
+        <fieldset>
+            <legend>3. Cursos a Matricular</legend>
+            <div class="grid-cursos">
+                <label class="curso-label"><input type="checkbox" class="chk-curso" value="150" onchange="calcularTotales()"> Matemática</label>
+                <label class="curso-label"><input type="checkbox" class="chk-curso" value="120" onchange="calcularTotales()"> Raz. Matemático</label>
+                <label class="curso-label"><input type="checkbox" class="chk-curso" value="130" onchange="calcularTotales()"> Comunicación</label>
+                <label class="curso-label"><input type="checkbox" class="chk-curso" value="200" onchange="calcularTotales()"> Canvas</label>
+                <label class="curso-label"><input type="checkbox" class="chk-curso" value="250" onchange="calcularTotales()"> IA Diseño</label>
+                <label class="curso-label"><input type="checkbox" class="chk-curso" value="300" onchange="calcularTotales()"> IA Programación</label>
+                <label class="curso-label"><input type="checkbox" class="chk-curso" value="180" onchange="calcularTotales()"> HTML</label>
+                <label class="curso-label"><input type="checkbox" class="chk-curso" value="180" onchange="calcularTotales()"> CSS</label>
+                <label class="curso-label"><input type="checkbox" class="chk-curso" value="200" onchange="calcularTotales()"> JS</label>
+            </div>
+            <div class="totales-row">
+                <div>
+                    <label for="numCursos" style="width: auto; margin-right: 10px;">Número de cursos:</label>
+                    <input type="text" id="numCursos" value="0" readonly>
+                </div>
+                <div>
+                    <label for="costoTotal" style="width: auto; margin-right: 10px;">Costo total:</label>
+                    <input type="text" id="costoTotal" value="S/ 0.00" readonly>
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- 4. Elección de Carrera Profesional -->
+        <fieldset>
+            <legend>4. Elección de Carrera Profesional</legend>
+            <div class="form-row">
+                <label for="carrera">Carrera a seguir:</label>
+                <select id="carrera" required>
+                    <option value="">-- Seleccione una carrera --</option>
+                    <option value="Programación">Programación</option>
+                    <option value="Diseño Gráfico">Diseño Gráfico</option>
+                    <option value="Fotografía">Fotografía</option>
+                    <option value="Contabilidad Bancaria">Contabilidad Bancaria</option>
+                    <option value="Marketing Digital">Marketing Digital</option>
+                    <option value="Redes y Seguridad">Redes y Seguridad</option>
+                    <option value="Administración">Administración</option>
+                    <option value="Diseño Web">Diseño Web</option>
+                    <option value="Computación">Computación</option>
+                </select>
+                <small>Seleccione una opción obligatoria.</small>
+            </div>
+        </fieldset>
+
+        <!-- Botones de Acción -->
+        <div class="botones">
+            <button type="button" class="btn-mostrar" onclick="mostrarDatos()">Mostrar datos</button>
+            <button type="button" class="btn-pdf" onclick="window.print()">PDF</button>
+            <button type="reset" class="btn-limpiar" onclick="limpiarForm()">Limpiar</button>
+        </div>
+
+    </form>
+
+    <script>
+        // 1. Validación de Edad
+        function validarEdad(input) {
+            if (input.value !== "") {
+                let edad = parseInt(input.value);
+                if (edad < 16) {
+                    alert("Solo se permite matricular a mayores de 16 años.");
+                    input.value = "";
+                }
+            }
+        }
+
+        // 2. Función unificada para Celular y Tel. Emergencia en tiempo real (Inicia con 9, máximo 9 dígitos)
+        function validarTelefono9Input(input) {
+            let valor = input.value;
+            if (valor.length > 0) {
+                // Verificar si empieza con 9
+                if (valor[0] !== '9') {
+                    alert("El teléfono debe empezar obligatoriamente con 9.");
+                    input.value = "";
+                    return;
+                }
+                // Limitar a solo números
+                valor = valor.replace(/[^0-9]/g, '');
+                
+                // Forzar máximo de 9 caracteres por si se pega texto (backup para el maxlength HTML)
+                if (valor.length > 9) {
+                    valor = valor.substring(0, 9);
+                }
+                
+                input.value = valor;
+            }
+        }
+
+        // 3. Validación al salir de la caja (onblur) para asegurar que tengan los 9 exactos si escribió algo
+        function validarExacto9(input) {
+            if (input.value.length > 0 && input.value.length !== 9) {
+                alert("El teléfono debe tener exactamente 9 dígitos.");
+                input.value = "";
+            }
+        }
+
+        // Función auxiliar para forzar solo números en tiempo real (DNI, Fijo)
+        function soloNumeros(input) {
+            input.value = input.value.replace(/[^0-9]/g, '');
+        }
+
+        // 4. Validación de Teléfono Fijo (Exactamente 6 dígitos)
+        function validarFijo(input) {
+            if (input.value.length > 0 && input.value.length !== 6) {
+                alert("El teléfono fijo debe tener exactamente 6 dígitos.");
+                input.value = "";
+            }
+        }
+
+        // 5. Validación de DNI (Exactamente 8 dígitos)
+        function validarDNI(input) {
+            if (input.value.length > 0 && input.value.length !== 8) {
+                alert("El DNI debe tener exactamente 8 dígitos.");
+                input.value = "";
+            }
+        }
+
+        // 6. Validación de Correo Electrónico
+        function validarCorreo(input) {
+            if (input.value.length > 0 && !input.value.includes('@')) {
+                alert("Correo inválido: Debe contener el carácter '@'.");
+                input.value = "";
+            }
+        }
+
+        // 7. Cálculo Automático de Cursos y Costos
+        function calcularTotales() {
+            const checkboxes = document.querySelectorAll('.chk-curso:checked');
+            const numCursosInput = document.getElementById('numCursos');
+            const costoTotalInput = document.getElementById('costoTotal');
+            
+            let cantidad = checkboxes.length;
+            let total = 0;
+            
+            checkboxes.forEach(chk => {
+                total += parseFloat(chk.value);
+            });
+
+            numCursosInput.value = cantidad;
+            costoTotalInput.value = "S/ " + total.toFixed(2);
+        }
+
+        // 8. Limpiar Formulario
+        function limpiarForm() {
+            setTimeout(() => {
+                document.getElementById('numCursos').value = "0";
+                document.getElementById('costoTotal').value = "S/ 0.00";
+            }, 10);
+        }
+
+        // 9. Mostrar Datos
+        function mostrarDatos() {
+            const form = document.getElementById('formularioMatricula');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const nombre = document.getElementById('nombre').value;
+            const apePat = document.getElementById('apePaterno').value;
+            const apeMat = document.getElementById('apeMaterno').value;
+            const dni = document.getElementById('dni').value;
+            const edad = document.getElementById('edad').value;
+            const carrera = document.getElementById('carrera').value;
+            
+            const nombreApoderado = document.getElementById('nombreApoderado').value;
+            const telApoderado = document.getElementById('telApoderado').value;
+
+            const numCursos = document.getElementById('numCursos').value;
+            const costoTotal = document.getElementById('costoTotal').value;
+
+            const cursosSeleccionados = Array.from(document.querySelectorAll('.chk-curso:checked'))
+                                            .map(chk => chk.parentNode.textContent.trim())
+                                            .join(', ');
+
+            const resumen = `*** RESUMEN DE MATRÍCULA ***\n\n` +
+                            `ESTUDIANTE:\n` +
+                            `- Nombre: ${nombre} ${apePat} ${apeMat}\n` +
+                            `- DNI: ${dni} | Edad: ${edad}\n\n` +
+                            `APODERADO:\n` +
+                            `- Nombre: ${nombreApoderado}\n` +
+                            `- Contacto: ${telApoderado}\n\n` +
+                            `ACADÉMICO:\n` +
+                            `- Carrera: ${carrera}\n` +
+                            `- Cursos: ${numCursos > 0 ? cursosSeleccionados : 'Ninguno'}\n` +
+                            `- Total Cursos: ${numCursos}\n` +
+                            `- Inversión Total: ${costoTotal}`;
+
+            alert(resumen);
+        }
+    </script>
+</body>
+</html>
